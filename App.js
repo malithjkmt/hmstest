@@ -14,6 +14,7 @@ import {
   View,
   Text,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -24,91 +25,68 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import HMSLocation from 'react-native-hms-location';
+
+const checkLocation = () => {
+  console.log('checkLocation')
+  try {
+
+    const locationRequest = HMSLocation.FusedLocation.Request.configure({
+      id: 'e0048e' + Math.random() * 10000,
+      priority: HMSLocation.FusedLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
+      interval: 3,
+      numUpdates: 10,
+      fastestInterval: 1000.0,
+      expirationTime: 200000.0,
+      expirationTimeDuration: 200000.0,
+      smallestDisplacement: 0.0,
+      maxWaitTime: 2000000.0,
+      needAddress: true,
+      language: 'en',
+      countryCode: 'en',
+    }).build();
+
+    const locationSettingsRequest = HMSLocation.FusedLocation.SettingsRequest.configure({
+      locationRequests: [locationRequest],
+      alwaysShow: false,
+      needBle: false,
+    }).build();
+
+    HMSLocation.FusedLocation.Native.checkLocationSettings(locationSettingsRequest)
+      .then(res => console.log(res))
+      .catch(ex => console.log("Error while getting location settings. " + ex))
+
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 const App: () => React$Node = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.button} onPress={checkLocation}>
+          <Text>Button A</Text>
+        </TouchableOpacity>
+      </View>
+
+
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
     backgroundColor: Colors.lighter,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+  button: {
+    backgroundColor: 'green',
+    padding: 30
+  }
 });
 
 export default App;
